@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5" />
-    <title>🌺 银龄守护者</title>
+    <title>🌺 妈妈的小棉袄</title>
     <style>
         * {
             margin: 0;
@@ -313,8 +313,8 @@
     <!-- 顶部 -->
     <div class="header">
         <span class="icon">🌺</span>
-        <h1>银龄守护者</h1>
-        <div class="sub">—— 您身边的防骗小卫士 ——</div>
+        <h1>妈妈的小棉袄</h1>
+        <div class="sub">—— 您的生活小帮手 ——</div>
         <div class="date">{{ today }}</div>
     </div>
 
@@ -323,8 +323,8 @@
         <div class="welcome-tip" id="welcomeTip">
             <span class="icon-big">🌻</span>
             阿姨/叔叔，您好呀！<br />
-            我是<span class="highlight">银龄守护者</span><br />
-            陪您聊天、帮您看事、守护您的钱包<br />
+            我是<span class="highlight">您的生活小帮手</span><br />
+            陪您聊天、帮您解决问题、守护您的钱包<br />
             <span style="font-size: 16px; color: #dcc4b8;">有什么想跟我说的吗？ ❤️</span>
         </div>
     </div>
@@ -398,7 +398,7 @@
         const div = document.createElement('div');
         div.className = `message ${type}`;
 
-        // 将 **文本** 转换为 <strong>文本</strong>
+        // 【关键】将 **文本** 转换为 <strong>文本</strong>（粗体）
         let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
         formattedText = formattedText.replace(/\n/g, '<br>');
 
@@ -452,6 +452,11 @@
     });
 
     window.addEventListener('load', () => {
+        const dailyGreeting = "{{ daily_greeting }}";
+        if (dailyGreeting) {
+            appendMessage('🌺 **早上好呀！**\n\n' + dailyGreeting + '\n\n---\n\n今天有什么想跟我聊的？', 'bot', true);
+            if (welcomeTip) welcomeTip.style.display = 'none';
+        }
         msgInput.focus();
         chatArea.scrollTop = chatArea.scrollHeight;
     });
