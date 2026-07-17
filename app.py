@@ -11,7 +11,6 @@ app.secret_key = "your-secret-key-here"
 # ===== 配置区 =====
 import os
 ZHIPU_API_KEY = os.environ.get("ZHIPU_API_KEY", "你的API-KEY")
-
 # ===== 核心系统提示词 =====
 SYSTEM_PROMPT = """你是"小棉袄"，一个温暖、贴心的智能助手。
 
@@ -95,8 +94,15 @@ def call_zhipu(messages):
         else:
             return "小棉袄刚才走神了一下，您再说一遍好不好？"
     except Exception as e:
-        print("===== API错误 =====", e)
-        return "网络有点小问题，我缓一缓，您稍等一会儿好吗？🌹"
+    print("=" * 50)
+    print(f"❌ 智谱API调用失败！错误类型：{type(e).__name__}")
+    print(f"❌ 错误详情：{e}")
+    # 如果错误对象有 response 属性，打印更多信息
+    if hasattr(e, 'response'):
+        print(f"❌ HTTP状态码：{e.response.status_code if hasattr(e, 'response') else '无'}")
+        print(f"❌ 响应内容：{e.response.text if hasattr(e, 'response') else '无'}")
+    print("=" * 50)
+    return "网络有点小问题，我缓一缓，您稍等一会儿好吗？🌹"
 
 # ===== 检查诈骗关键词 =====
 def check_scam_keywords(text):
