@@ -97,10 +97,9 @@ def call_zhipu(messages):
     print("=" * 50)
     print(f"❌ 智谱API调用失败！错误类型：{type(e).__name__}")
     print(f"❌ 错误详情：{e}")
-    # 如果错误对象有 response 属性，打印更多信息
     if hasattr(e, 'response'):
-        print(f"❌ HTTP状态码：{e.response.status_code if hasattr(e, 'response') else '无'}")
-        print(f"❌ 响应内容：{e.response.text if hasattr(e, 'response') else '无'}")
+        print(f"❌ HTTP状态码：{e.response.status_code}")
+        print(f"❌ 响应内容：{e.response.text}")
     print("=" * 50)
     return "网络有点小问题，我缓一缓，您稍等一会儿好吗？🌹"
 
