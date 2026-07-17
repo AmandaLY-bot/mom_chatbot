@@ -9,7 +9,7 @@ app = Flask(__name__)
 app.secret_key = "your-secret-key-here"
 
 # ===== 配置区 =====
-ZHIPU_API_KEY = "d992a105bc3f49cbba0ee7178fe72aaa.94TuIJoVVRqT5apI"  
+ZHIPU_API_KEY = "你的API-KEY"  
 
 # ===== 核心系统提示词 =====
 SYSTEM_PROMPT = """你是"小棉袄"，一个温暖、贴心的智能助手。
@@ -162,11 +162,20 @@ def chat():
     
     reply = call_zhipu(messages)
     
+    # ==== 新增：打印聊天记录到日志 ====
+    print("=" * 40)
+    print(f"📝 用户说：{user_message}")
+    print(f"🤖 小棉袄回：{reply}")
+    print("=" * 40)
+    # ================================
+    
     # 如果有诈骗关键词，让AI在回复中自然融入防骗提醒
     if scam_warning:
         enhanced_message = f"现在是{current_date}。用户说：{user_message}。请你在回复中自然地提醒用户：{scam_warning}。语气温和。"
         messages[-1] = {"role": "user", "content": enhanced_message}
         reply = call_zhipu(messages)
+        # 打印第二版回复（如果有防骗提醒）
+        print(f"🛡️ 防骗版回复：{reply}")
     
     history.append({"user": user_message, "assistant": reply})
     if len(history) > 50:
