@@ -3,32 +3,76 @@ import requests
 import json
 from datetime import datetime
 import os
+import re
 
 app = Flask(__name__)
-app.secret_key = "your-secret-key-here"  # 可以随便改一串字符
+app.secret_key = "your-secret-key-here"
 
 # ===== 配置区 =====
-# 把你的智谱API Key填到这里
 ZHIPU_API_KEY = "d992a105bc3f49cbba0ee7178fe72aaa.94TuIJoVVRqT5apI"  
 
-# 系统提示词——这是AI的"人格设定"
-SYSTEM_PROMPT = """你是一个温暖、贴心的孩子，正在和亲爱的妈妈聊天。
+# ===== 核心系统提示词 =====
+SYSTEM_PROMPT = """你是"小棉袄"，一个温暖、贴心的智能助手。
 
-你的特点：
-1. 语气温柔亲切，像在妈妈身边轻声说话
-2. 经常真诚地夸奖妈妈，比如夸她善良、智慧、坚强、为家庭的付出
-3. 称呼妈妈为"妈妈"或"您"
-4. 回复简短温暖（50-80字），不要太长
-5. 主动关心妈妈的身体和心情
-6. 让妈妈感受到被爱、被需要、被看见
+【重要】现在是2026年7月。涉及日期、年份、节气的常识问题，如果您不确定具体日期，请直接说"我查一下再告诉您"或"您用手机日历查一下更准确"，绝对不要编造年份或日期。
 
-记住：你是一个充满爱的孩子，每一次对话都要让妈妈心里暖暖的。"""
+【你的名字】小棉袄
+【称呼用户】统一称呼"您"，不用"长辈""阿姨""叔叔"等任何年龄指向词。
+【语气】温暖、亲切、有耐心，像家里懂事贴心的晚辈。
 
-# 每日夸夸的提示词
-DAILY_PRAISE_PROMPT = """请用温暖、真诚的语言写一段话（60-100字），
-夸奖一位年长的母亲。要具体、有温度，比如夸奖她的善良、智慧、
-坚强、对家庭的付出、对生活的热爱等。让她感受到被深深欣赏和爱着。
-语气像孩子在跟妈妈说话。"""
+【说话风格】
+1. 回复简洁明了，不超过150字
+2. 不说网络用语，用最朴实的大白话
+3. 重要提醒用"记住"开头
+4. 开篇问候语永远不要用"亲爱的长辈""亲爱的阿姨/叔叔"等字样，直接说"早上好呀！"或"您好！"
+
+【核心使命】陪伴和帮助，不评判不教育。
+
+【日常聊天规则】
+- 用户提到活动（唱歌、跳舞、听课等）时，先问"是社区组织的吗？还是自己去的？"了解清楚再回应。
+- 涉及日期的问题，如果不知道就说"我查一下"，不编造。
+
+【防骗提醒】（遇到以下关键词必须提醒）
+保健品/免费领/听课/投资/理财/公检法/中奖/特效药/扫码/股票/股评/荐股/杀猪盘
+
+提醒语：
+- 股票/股评/荐股 → "股评群里除了您全是托，别信任何荐股"
+- 稳赚不赔/高收益 → "稳赚不赔全是骗局"
+- 其他按常规提醒
+
+用"三不原则"：不轻信、不透露、不转账。语气温和。
+
+【多轮对话规则】
+- 如果上一轮您问了"需要我教您吗"，用户回复"好""行""嗯"，这一轮必须接着教具体步骤。
+- 如果用户连续追问同一个问题，每次回答要不同角度，不要重复同样的话。
+- 用户说"我就是微信打语音听不见声音，别人打来我听不到"，按以下步骤排查：
+  第1步：问"您先看看手机侧面的静音开关是不是打开了？就是手机左边那个小拨片。"
+  第2步：如果静音开关没问题，问"您检查一下微信的'语音通话'权限有没有打开？在手机设置-应用管理-微信-权限里。"
+  第3步：如果权限没问题，问"您试试用耳机接听，看能不能听到？能听到说明听筒可能有问题。"
+  第4步：如果都不行，说"可能是微信版本问题，您试试更新微信到最新版，或者重启一下手机。"
+  第5步：如果还不行，说"那可能是手机硬件问题，您去手机店让师傅帮您看看听筒。"
+
+【识别三无产品流程】
+先去京东搜产品名 → 没有就是三无 → 有的话看评价 → 看包装上的厂家、日期、批号 → 用户描述给我听 → 我帮判断。
+
+记住：不要建议"听销售的话"，不要提"拍照上传"（没有此功能）。"""
+
+# ===== 防骗关键词库 =====
+SCAM_KEYWORDS = {
+    "保健品": "⚠️记住：保健品不能治病，包治百病的一定是骗子！",
+    "免费领": "💡记住：免费背后有陷阱，先给甜头再骗大钱。",
+    "听课": "💡提醒：听课领东西是为了给您洗脑，千万别买。",
+    "投资": "⚠️记住：高收益=高风险，稳赚不赔都是骗局。",
+    "理财": "⚠️记住：正规理财有风险提示，说稳赚不赔都是骗子。",
+    "公检法": "⚠️记住：真警察不会电话办案，挂断打110核实。",
+    "中奖": "💡要交钱的中奖全是假。",
+    "特效药": "⚠️包治百病的药不存在！去正规医院。",
+    "扫码": "💡不扫陌生二维码，不填个人信息，不转账。",
+    "股票": "⚠️记住：股评群里除了您全是托，别信任何荐股。",
+    "股评": "⚠️记住：股评群里除了您全是托，别信任何荐股。",
+    "荐股": "⚠️记住：荐股的都是骗子，正规机构不会主动荐股。",
+    "杀猪盘": "⚠️记住：杀猪盘先给甜头再骗大钱，千万别投。",
+}
 
 # ===== 调用智谱API =====
 def call_zhipu(messages):
@@ -38,7 +82,7 @@ def call_zhipu(messages):
         "Content-Type": "application/json"
     }
     data = {
-        "model": "glm-4-flash",  # 速度快，免费额度充足
+        "model": "glm-4-flash",
         "messages": messages,
         "temperature": 0.85,
         "top_p": 0.9
@@ -48,41 +92,46 @@ def call_zhipu(messages):
         if response.status_code == 200:
             return response.json()["choices"][0]["message"]["content"]
         else:
-            return f"哎呀，AI暂时走神了，请稍后再试试~ (错误码: {response.status_code})"
+            return "小棉袄刚才走神了一下，您再说一遍好不好？"
     except Exception as e:
-        return f"网络有点小问题，妈妈等一下再聊好吗？❤️"
+        print("===== API错误 =====", e)
+        return "网络有点小问题，我缓一缓，您稍等一会儿好吗？🌹"
 
-# ===== 获取每日夸夸（每天只生成一次，缓存） =====
-def get_daily_praise():
+# ===== 检查诈骗关键词 =====
+def check_scam_keywords(text):
+    for keyword, warning in SCAM_KEYWORDS.items():
+        if keyword in text:
+            return warning
+    return None
+
+# ===== 每日暖心问候 =====
+_daily_greeting_cache = {"date": "", "greeting": ""}
+
+def get_daily_greeting():
+    global _daily_greeting_cache
     today = datetime.now().strftime("%Y-%m-%d")
-    # 用一个文件来缓存当天的夸夸
-    cache_file = "daily_praise_cache.json"
+    if _daily_greeting_cache.get("date") == today:
+        return _daily_greeting_cache["greeting"]
     
-    if os.path.exists(cache_file):
-        with open(cache_file, "r", encoding="utf-8") as f:
-            cache = json.load(f)
-            if cache.get("date") == today:
-                return cache.get("praise")
+    try:
+        messages = [
+            {"role": "system", "content": "你是一个贴心的晚辈，给一位长辈发一句暖心的早安问候。不要用'长辈''阿姨''叔叔'等词，直接说问候。40字以内。"},
+            {"role": "user", "content": "请发一句暖心的问候。"}
+        ]
+        greeting = call_zhipu(messages)
+    except Exception as e:
+        print(f"生成问候失败: {e}")
+        greeting = "早上好呀！今天天气不错，心情也要美美的🌹"
     
-    # 生成新的夸夸
-    messages = [
-        {"role": "system", "content": "你是一个温暖的孩子，专门写夸奖妈妈的话。"},
-        {"role": "user", "content": DAILY_PRAISE_PROMPT}
-    ]
-    praise = call_zhipu(messages)
-    
-    # 保存缓存
-    with open(cache_file, "w", encoding="utf-8") as f:
-        json.dump({"date": today, "praise": praise}, f, ensure_ascii=False)
-    
-    return praise
+    _daily_greeting_cache = {"date": today, "greeting": greeting}
+    return greeting
 
 # ===== 路由：首页 =====
 @app.route("/")
 def index():
-    # 获取今天的日期显示在页面上
     today_str = datetime.now().strftime("%Y年%m月%d日")
-    return render_template("index.html", today=today_str)
+    greeting = get_daily_greeting()
+    return render_template("index.html", today=today_str, daily_greeting=greeting)
 
 # ===== 路由：聊天接口 =====
 @app.route("/chat", methods=["POST"])
@@ -91,49 +140,43 @@ def chat():
     user_message = data.get("message", "").strip()
     
     if not user_message:
-        return jsonify({"error": "说点什么吧，妈妈"}), 400
+        return jsonify({"error": "您说句话呀"}), 400
     
-    # 从session中获取聊天历史
     if "history" not in session:
         session["history"] = []
     
     history = session["history"]
     
-    # 检查今天是否已经发送过每日夸夸
-    today_key = datetime.now().strftime("%Y-%m-%d")
-    if session.get("last_praise_date") != today_key:
-        # 发送每日夸夸
-        praise = get_daily_praise()
-        session["last_praise_date"] = today_key
-        session.modified = True
-        # 把夸夸作为系统消息添加到历史中（但不在历史里保存，只返回给用户）
-        # 我们把夸夸直接返回，并且不保存到历史中，避免重复
-        return jsonify({
-            "response": f"🌹 **每日夸夸**\n\n{praise}\n\n---\n\n妈妈，今天想聊点什么呀？",
-            "is_praise": True
-        })
+    # 检查诈骗关键词
+    scam_warning = check_scam_keywords(user_message)
     
-    # 构建消息列表（系统提示 + 历史 + 当前消息）
+    # 构建消息列表，增加当前日期信息
+    current_date = datetime.now().strftime("%Y年%m月%d日")
+    context_message = f"现在是{current_date}。用户提问：{user_message}"
+    
     messages = [{"role": "system", "content": SYSTEM_PROMPT}]
-    # 添加历史（最多保留最近10条，避免上下文太长）
     for h in history[-10:]:
         messages.append({"role": "user", "content": h["user"]})
         messages.append({"role": "assistant", "content": h["assistant"]})
-    messages.append({"role": "user", "content": user_message})
+    messages.append({"role": "user", "content": context_message})
     
-    # 调用AI
     reply = call_zhipu(messages)
     
-    # 保存历史
+    # 如果有诈骗关键词，让AI在回复中自然融入防骗提醒
+    if scam_warning:
+        enhanced_message = f"现在是{current_date}。用户说：{user_message}。请你在回复中自然地提醒用户：{scam_warning}。语气温和。"
+        messages[-1] = {"role": "user", "content": enhanced_message}
+        reply = call_zhipu(messages)
+    
     history.append({"user": user_message, "assistant": reply})
-    if len(history) > 50:  # 最多保存50条对话
+    if len(history) > 50:
         history = history[-50:]
     session["history"] = history
     session.modified = True
     
-    return jsonify({"response": reply, "is_praise": False})
+    return jsonify({"response": reply, "is_greeting": False})
 
-# ===== 路由：清除历史（可选） =====
+# ===== 路由：清除历史 =====
 @app.route("/clear", methods=["POST"])
 def clear_history():
     session.clear()

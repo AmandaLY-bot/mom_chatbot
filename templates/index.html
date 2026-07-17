@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5" />
-    <title>💕 妈妈的贴心小棉袄</title>
+    <title>🌺 妈妈的小棉袄</title>
     <style>
         * {
             margin: 0;
@@ -12,59 +12,64 @@
         }
 
         body {
-            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
-            background: #fdf6ed;
-            background-image: radial-gradient(circle at 20% 30%, #fce9db 0%, #fdf6ed 80%);
+            font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+            background: #f5efe8;
+            background-image: radial-gradient(circle at 20% 30%, #f0e4d8 0%, #f5efe8 80%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 16px;
+            padding: 12px;
         }
 
         .container {
             width: 100%;
             max-width: 520px;
-            height: 92vh;
-            max-height: 780px;
-            background: rgba(255, 248, 240, 0.85);
-            backdrop-filter: blur(10px);
-            border-radius: 36px;
-            box-shadow: 0 20px 60px rgba(180, 120, 100, 0.25);
+            height: 94vh;
+            max-height: 820px;
+            background: rgba(255, 250, 245, 0.92);
+            backdrop-filter: blur(8px);
+            border-radius: 32px;
+            box-shadow: 0 20px 60px rgba(150, 120, 100, 0.2);
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            position: relative;
-            border: 1px solid rgba(255, 220, 200, 0.5);
+            border: 1px solid rgba(220, 190, 170, 0.3);
         }
 
-        /* ===== 顶部 ===== */
+        /* ===== 顶部 - 暖橙色调 ===== */
         .header {
-            padding: 22px 24px 14px 24px;
+            padding: 20px 22px 12px 22px;
             text-align: center;
-            background: linear-gradient(135deg, #fce4d6 0%, #fdeee8 100%);
-            border-bottom: 1px solid #f5d9cc;
+            background: linear-gradient(145deg, #f5d6c6 0%, #fde8dd 100%);
+            border-bottom: 1px solid #ecd5c7;
             flex-shrink: 0;
+        }
+
+        .header .icon {
+            font-size: 32px;
+            display: block;
+            margin-bottom: 2px;
         }
 
         .header h1 {
             font-size: 26px;
             font-weight: 600;
-            color: #7a4a3a;
-            letter-spacing: 2px;
+            color: #6a3f30;
+            letter-spacing: 3px;
         }
 
         .header .sub {
-            font-size: 16px;
-            color: #b07a6a;
-            margin-top: 4px;
+            font-size: 15px;
+            color: #9a6f5e;
+            margin-top: 2px;
             font-weight: 400;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
         }
 
         .header .date {
             font-size: 14px;
-            color: #c49585;
+            color: #b58876;
             margin-top: 2px;
         }
 
@@ -72,14 +77,13 @@
         .chat-area {
             flex: 1;
             overflow-y: auto;
-            padding: 18px 20px 10px 20px;
+            padding: 16px 18px 8px 18px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
             scroll-behavior: smooth;
         }
 
-        /* 滚动条美化 */
         .chat-area::-webkit-scrollbar {
             width: 4px;
         }
@@ -87,11 +91,11 @@
             background: transparent;
         }
         .chat-area::-webkit-scrollbar-thumb {
-            background: #e2c8bc;
+            background: #dcc4b8;
             border-radius: 4px;
         }
 
-        /* ===== 消息气泡 ===== */
+        /* ===== 消息气泡 - 加大字体适老 ===== */
         .message {
             max-width: 88%;
             padding: 14px 18px;
@@ -110,8 +114,8 @@
 
         .message.user {
             align-self: flex-end;
-            background: #e8d5cb;
-            color: #4d332a;
+            background: #e5d3c8;
+            color: #4a3228;
             border-bottom-right-radius: 6px;
         }
 
@@ -120,13 +124,13 @@
             background: #ffffff;
             color: #3d2c24;
             border-bottom-left-radius: 6px;
-            box-shadow: 0 2px 12px rgba(160, 120, 100, 0.10);
+            box-shadow: 0 2px 12px rgba(160, 130, 110, 0.08);
         }
 
-        .message.bot .praise-tag {
+        .message.bot .greeting-tag {
             display: inline-block;
-            background: #f7d9c8;
-            color: #8a4e3a;
+            background: #f5d6c6;
+            color: #7a4a3a;
             font-size: 14px;
             padding: 2px 14px;
             border-radius: 20px;
@@ -135,15 +139,31 @@
             letter-spacing: 1px;
         }
 
-        .message.bot .praise-tag::before {
-            content: "🌹 ";
+        .message.bot .greeting-tag::before {
+            content: "🌺 ";
+        }
+
+        .message.bot .warning-tag {
+            display: inline-block;
+            background: #fce4d6;
+            color: #b85a3a;
+            font-size: 14px;
+            padding: 2px 14px;
+            border-radius: 20px;
+            margin-bottom: 8px;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+        .message.bot .warning-tag::before {
+            content: "⚠️ ";
         }
 
         /* ===== 输入区域 ===== */
         .input-area {
-            padding: 14px 20px 20px 20px;
-            background: rgba(255, 248, 240, 0.6);
-            border-top: 1px solid #f0dad0;
+            padding: 12px 18px 18px 18px;
+            background: rgba(255, 248, 242, 0.6);
+            border-top: 1px solid #ecddd4;
             display: flex;
             gap: 10px;
             flex-shrink: 0;
@@ -160,7 +180,7 @@
             background: #ffffff;
             resize: none;
             outline: none;
-            box-shadow: 0 2px 12px rgba(160, 120, 100, 0.08);
+            box-shadow: 0 2px 12px rgba(160, 130, 110, 0.06);
             transition: box-shadow 0.2s;
             min-height: 52px;
             max-height: 120px;
@@ -169,11 +189,11 @@
         }
 
         .input-area textarea:focus {
-            box-shadow: 0 2px 20px rgba(180, 130, 110, 0.15);
+            box-shadow: 0 2px 20px rgba(180, 140, 120, 0.12);
         }
 
         .input-area textarea::placeholder {
-            color: #c9b0a4;
+            color: #c9b4a8;
             font-size: 18px;
         }
 
@@ -182,13 +202,13 @@
             height: 56px;
             border-radius: 50%;
             border: none;
-            background: linear-gradient(135deg, #e8c8b8 0%, #dbb4a2 100%);
+            background: linear-gradient(145deg, #f0d5c6 0%, #e0c0b0 100%);
             color: #5a3a2e;
             font-size: 28px;
             cursor: pointer;
             flex-shrink: 0;
             transition: all 0.2s;
-            box-shadow: 0 4px 16px rgba(180, 130, 110, 0.2);
+            box-shadow: 0 4px 16px rgba(180, 140, 120, 0.15);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -196,7 +216,7 @@
 
         .input-area .btn-send:hover {
             transform: scale(1.04);
-            box-shadow: 0 6px 24px rgba(180, 130, 110, 0.3);
+            box-shadow: 0 6px 24px rgba(180, 140, 120, 0.2);
         }
 
         .input-area .btn-send:active {
@@ -217,18 +237,18 @@
             border-radius: 18px;
             border-bottom-left-radius: 6px;
             font-size: 18px;
-            color: #b07a6a;
+            color: #b58876;
             display: flex;
             align-items: center;
             gap: 6px;
-            box-shadow: 0 2px 12px rgba(160, 120, 100, 0.08);
+            box-shadow: 0 2px 12px rgba(160, 130, 110, 0.06);
         }
 
         .typing .dot {
             display: inline-block;
             width: 8px;
             height: 8px;
-            background: #dbb4a2;
+            background: #dcc4b8;
             border-radius: 50%;
             animation: wave 1.2s infinite;
         }
@@ -245,26 +265,45 @@
             .container {
                 max-height: 100vh;
                 height: 100vh;
-                border-radius: 20px;
+                border-radius: 16px;
             }
             .header h1 { font-size: 22px; }
-            .message { font-size: 18px; padding: 12px 16px; }
-            .input-area textarea { font-size: 18px; padding: 12px 16px; }
+            .message { font-size: 19px; padding: 12px 16px; }
+            .input-area textarea { font-size: 19px; padding: 12px 16px; }
             .input-area .btn-send { width: 48px; height: 48px; font-size: 24px; }
         }
 
-        /* ===== 空状态提示 ===== */
+        /* ===== 欢迎语 ===== */
         .welcome-tip {
             text-align: center;
-            color: #c9b0a4;
+            color: #c9b4a8;
             font-size: 18px;
-            padding: 40px 20px;
-            line-height: 2;
+            padding: 30px 20px;
+            line-height: 2.2;
         }
-        .welcome-tip .heart {
-            font-size: 48px;
+        .welcome-tip .icon-big {
+            font-size: 44px;
             display: block;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
+        }
+        .welcome-tip .highlight {
+            color: #9a6f5e;
+            font-weight: 500;
+        }
+
+        /* ===== 安全提示小标签 ===== */
+        .safe-footer {
+            text-align: center;
+            font-size: 12px;
+            color: #c9b4a8;
+            padding: 4px 0 8px 0;
+            letter-spacing: 1px;
+            border-top: 1px solid #ecddd4;
+            flex-shrink: 0;
+            background: rgba(255, 248, 242, 0.4);
+        }
+        .safe-footer span {
+            margin: 0 6px;
         }
     </style>
 </head>
@@ -273,25 +312,32 @@
 <div class="container">
     <!-- 顶部 -->
     <div class="header">
-        <h1>💕 妈妈的贴心小棉袄</h1>
-        <div class="sub">—— 永远爱你，永远在 ——</div>
+        <span class="icon">🌺</span>
+        <h1>妈妈的小棉袄</h1>
+        <div class="sub">—— 您的生活小帮手 ——</div>
         <div class="date">{{ today }}</div>
     </div>
 
     <!-- 聊天区 -->
     <div class="chat-area" id="chatArea">
         <div class="welcome-tip" id="welcomeTip">
-            <span class="heart">🌺</span>
-            妈妈，你来啦！<br />
-            有什么想跟我聊的吗？<br />
-            <span style="font-size: 16px; color: #dbb4a2;">我每天都在这里陪着你 ❤️</span>
+            <span class="icon-big">🌻</span>
+            阿姨/叔叔，您好呀！<br />
+            我是<span class="highlight">您的生活小帮手</span><br />
+            陪您聊天、帮您解决问题、守护您的钱包<br />
+            <span style="font-size: 16px; color: #dcc4b8;">有什么想跟我说的吗？ ❤️</span>
         </div>
     </div>
 
     <!-- 输入区 -->
     <div class="input-area">
-        <textarea id="msgInput" rows="1" placeholder="想跟孩子说点什么…" maxlength="500"></textarea>
-        <button class="btn-send" id="sendBtn" title="发送">➤</button>
+        <textarea id="msgInput" rows="1" placeholder="跟守护者说说话…" maxlength="500"></textarea>
+        <button class="btn-send" id="sendBtn" title="发送">✉</button>
+    </div>
+
+    <!-- 底部安全提示 -->
+    <div class="safe-footer">
+        <span>🔒 不轻信</span> · <span>🛡 不透露</span> · <span>🚫 不转账</span>
     </div>
 </div>
 
@@ -303,29 +349,23 @@
 
     let isWaiting = false;
 
-    // 自动调整输入框高度
     msgInput.addEventListener('input', function() {
         this.style.height = 'auto';
         this.style.height = Math.min(this.scrollHeight, 120) + 'px';
     });
 
-    // 发送消息
     async function sendMessage() {
         const text = msgInput.value.trim();
         if (!text || isWaiting) return;
 
-        // 隐藏欢迎语
         if (welcomeTip) welcomeTip.style.display = 'none';
 
-        // 显示用户消息
         appendMessage(text, 'user');
         msgInput.value = '';
         msgInput.style.height = 'auto';
         msgInput.focus();
 
-        // 显示打字状态
         const typingId = showTyping();
-
         isWaiting = true;
         sendBtn.disabled = true;
 
@@ -337,17 +377,16 @@
             });
             const data = await res.json();
 
-            // 移除打字状态
             removeTyping(typingId);
 
             if (data.response) {
-                appendMessage(data.response, 'bot', data.is_praise || false);
+                appendMessage(data.response, 'bot', data.is_greeting || false);
             } else {
-                appendMessage('😊 妈妈，信号不太好，再说一遍好吗？', 'bot');
+                appendMessage('阿姨/叔叔，我缓一缓，您再说一遍好吗？🌹', 'bot');
             }
         } catch (err) {
             removeTyping(typingId);
-            appendMessage('🌹 妈妈别急，我在这儿呢。再试一次好不好？', 'bot');
+            appendMessage('网络有点忙，阿姨/叔叔稍等一小会儿好不好？🌹', 'bot');
         }
 
         isWaiting = false;
@@ -355,34 +394,45 @@
         chatArea.scrollTop = chatArea.scrollHeight;
     }
 
-    // 追加消息
-    function appendMessage(text, type, isPraise = false) {
-        const div = document.createElement('div');
-        div.className = `message ${type}`;
+    function appendMessage(text, type, isGreeting = false) {
+    const div = document.createElement('div');
+    div.className = `message ${type}`;
 
-        if (type === 'bot' && isPraise) {
-            const tag = document.createElement('div');
-            tag.className = 'praise-tag';
-            tag.textContent = '每日夸夸';
-            div.appendChild(tag);
-            // 将文本中的换行转为<br>
-            const p = document.createElement('div');
-            p.innerHTML = text.replace(/\n/g, '<br>');
-            div.appendChild(p);
-        } else {
-            div.innerHTML = text.replace(/\n/g, '<br>');
-        }
+    // 【关键】将 **文本** 转换为 <strong>文本</strong>（粗体）
+    let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    formattedText = formattedText.replace(/\n/g, '<br>');
 
-        chatArea.appendChild(div);
-        chatArea.scrollTop = chatArea.scrollHeight;
+    if (type === 'bot' && isGreeting) {
+        const tag = document.createElement('div');
+        tag.className = 'greeting-tag';
+        tag.textContent = '🌺 暖心问候';
+        div.appendChild(tag);
+        const p = document.createElement('div');
+        p.innerHTML = formattedText;
+        div.appendChild(p);
+    } else if (type === 'bot' && text.includes('⚠️')) {
+        const tag = document.createElement('div');
+        tag.className = 'warning-tag';
+        tag.textContent = '⚠️ 防骗提醒';
+        div.appendChild(tag);
+        const p = document.createElement('div');
+        p.innerHTML = formattedText;
+        div.appendChild(p);
+    } else {
+        const p = document.createElement('div');
+        p.innerHTML = formattedText;
+        div.appendChild(p);
     }
 
-    // 显示打字状态
+    chatArea.appendChild(div);
+    chatArea.scrollTop = chatArea.scrollHeight;
+}
+
     function showTyping() {
         const div = document.createElement('div');
         div.className = 'typing';
         div.id = 'typing-' + Date.now();
-        div.innerHTML = '孩子正在听 <span class="dot"></span><span class="dot"></span><span class="dot"></span>';
+        div.innerHTML = '小棉袄在思考 <span class="dot"></span><span class="dot"></span><span class="dot"></span>';
         chatArea.appendChild(div);
         chatArea.scrollTop = chatArea.scrollHeight;
         return div.id;
@@ -393,7 +443,6 @@
         if (el) el.remove();
     }
 
-    // 事件绑定
     sendBtn.addEventListener('click', sendMessage);
     msgInput.addEventListener('keydown', function(e) {
         if (e.key === 'Enter' && !e.shiftKey) {
@@ -402,17 +451,18 @@
         }
     });
 
-    // 页面加载时聚焦输入框
     window.addEventListener('load', () => {
-        msgInput.focus();
-        // 滚动到最底部
-        chatArea.scrollTop = chatArea.scrollHeight;
-    });
-
-    // 点击空白区域聚焦输入框
-    chatArea.addEventListener('click', () => {
-        msgInput.focus();
-    });
+    // 从后端获取每日问候并显示
+    const dailyGreeting = "{{ daily_greeting }}";  // 由 Flask 传入
+    if (dailyGreeting) {
+        // 自动显示每日问候（不消耗用户消息）
+        appendMessage('🌺 **早上好呀！**\n\n' + dailyGreeting + '\n\n---\n\n今天有什么想跟我聊的？', 'bot', true);
+        // 隐藏欢迎语
+        if (welcomeTip) welcomeTip.style.display = 'none';
+    }
+    msgInput.focus();
+    chatArea.scrollTop = chatArea.scrollHeight;
+});
 </script>
 
 </body>
