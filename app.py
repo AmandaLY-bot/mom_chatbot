@@ -10,7 +10,9 @@ app.secret_key = "your-secret-key-here"
 
 # ===== 配置区 =====
 import os
-ZHIPU_API_KEY = os.environ.get("ZHIPU_API_KEY", "d992a105bc3f49cbba0ee7178fe72aaa.94TuIJoVVRqT5apI")
+ZHIPU_API_KEY = os.environ.get("d992a105bc3f49cbba0ee7178fe72aaa.94TuIJoVVRqT5apI")
+if not ZHIPU_API_KEY:
+    raise ValueError("❌ 环境变量 ZHIPU_API_KEY 未设置！请检查 Render 配置。")
 
 # ===== 核心系统提示词 =====
 SYSTEM_PROMPT = """你是"小棉袄"，一个温暖、贴心的智能助手。
