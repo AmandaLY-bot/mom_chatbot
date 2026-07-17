@@ -395,38 +395,38 @@
     }
 
     function appendMessage(text, type, isGreeting = false) {
-    const div = document.createElement('div');
-    div.className = `message ${type}`;
+        const div = document.createElement('div');
+        div.className = `message ${type}`;
 
-    // 【关键】将 **文本** 转换为 <strong>文本</strong>（粗体）
-    let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    formattedText = formattedText.replace(/\n/g, '<br>');
+        // 【关键】将 **文本** 转换为 <strong>文本</strong>（粗体）
+        let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        formattedText = formattedText.replace(/\n/g, '<br>');
 
-    if (type === 'bot' && isGreeting) {
-        const tag = document.createElement('div');
-        tag.className = 'greeting-tag';
-        tag.textContent = '🌺 暖心问候';
-        div.appendChild(tag);
-        const p = document.createElement('div');
-        p.innerHTML = formattedText;
-        div.appendChild(p);
-    } else if (type === 'bot' && text.includes('⚠️')) {
-        const tag = document.createElement('div');
-        tag.className = 'warning-tag';
-        tag.textContent = '⚠️ 防骗提醒';
-        div.appendChild(tag);
-        const p = document.createElement('div');
-        p.innerHTML = formattedText;
-        div.appendChild(p);
-    } else {
-        const p = document.createElement('div');
-        p.innerHTML = formattedText;
-        div.appendChild(p);
+        if (type === 'bot' && isGreeting) {
+            const tag = document.createElement('div');
+            tag.className = 'greeting-tag';
+            tag.textContent = '🌺 暖心问候';
+            div.appendChild(tag);
+            const p = document.createElement('div');
+            p.innerHTML = formattedText;
+            div.appendChild(p);
+        } else if (type === 'bot' && text.includes('⚠️')) {
+            const tag = document.createElement('div');
+            tag.className = 'warning-tag';
+            tag.textContent = '⚠️ 防骗提醒';
+            div.appendChild(tag);
+            const p = document.createElement('div');
+            p.innerHTML = formattedText;
+            div.appendChild(p);
+        } else {
+            const p = document.createElement('div');
+            p.innerHTML = formattedText;
+            div.appendChild(p);
+        }
+
+        chatArea.appendChild(div);
+        chatArea.scrollTop = chatArea.scrollHeight;
     }
-
-    chatArea.appendChild(div);
-    chatArea.scrollTop = chatArea.scrollHeight;
-}
 
     function showTyping() {
         const div = document.createElement('div');
@@ -452,17 +452,18 @@
     });
 
     window.addEventListener('load', () => {
-    // 从后端获取每日问候并显示
-    const dailyGreeting = "{{ daily_greeting }}";  // 由 Flask 传入
-    if (dailyGreeting) {
-        // 自动显示每日问候（不消耗用户消息）
-        appendMessage('🌺 **早上好呀！**\n\n' + dailyGreeting + '\n\n---\n\n今天有什么想跟我聊的？', 'bot', true);
-        // 隐藏欢迎语
-        if (welcomeTip) welcomeTip.style.display = 'none';
-    }
-    msgInput.focus();
-    chatArea.scrollTop = chatArea.scrollHeight;
-});
+        const dailyGreeting = "{{ daily_greeting }}";
+        if (dailyGreeting) {
+            appendMessage('🌺 **早上好呀！**\n\n' + dailyGreeting + '\n\n---\n\n今天有什么想跟我聊的？', 'bot', true);
+            if (welcomeTip) welcomeTip.style.display = 'none';
+        }
+        msgInput.focus();
+        chatArea.scrollTop = chatArea.scrollHeight;
+    });
+
+    chatArea.addEventListener('click', () => {
+        msgInput.focus();
+    });
 </script>
 
 </body>
