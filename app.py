@@ -134,15 +134,6 @@ def get_daily_greeting():
 
 # ===== 路由：首页 =====
 @app.route("/")
-@app.route("/test")
-def test_api():
-    test_messages = [{"role": "user", "content": "你好，请说一句话证明你在线。"}]
-    try:
-        result = call_zhipu(test_messages)
-        return f"✅ 智谱 API 连接成功！<br>返回结果：{result}"
-    except Exception as e:
-        return f"❌ 智谱 API 连接失败！<br>错误信息：{e}"
-
 def index():
     today_str = datetime.now().strftime("%Y年%m月%d日")
     greeting = get_daily_greeting()
