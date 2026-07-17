@@ -9,7 +9,7 @@ app = Flask(__name__)
 app.secret_key = "your-secret-key-here"
 
 # ===== 配置区 =====
-ZHIPU_API_KEY = "你的API-KEY"  
+ZHIPU_API_KEY = "d992a105bc3f49cbba0ee7178fe72aaa.94TuIJoVVRqT5apI"  
 
 # ===== 核心系统提示词 =====
 SYSTEM_PROMPT = """你是"小棉袄"，一个温暖、贴心的智能助手。
